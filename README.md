@@ -4,8 +4,17 @@
 
 🔗 Demonstração Visual & Acesso
 
+![IMG_2248](https://github.com/user-attachments/assets/a67a8815-a670-4ad0-996c-ddf02a596fbf)
+![IMG_2245](https://github.com/user-attachments/assets/671e7540-ff47-418c-9116-c95d7410ae3a)
+![IMG_2246](https://github.com/user-attachments/assets/d566eb18-0407-4972-aa72-fdc448bbf008)
+![IMG_2239](https://github.com/user-attachments/assets/cb02a540-8a74-4839-babc-ad7814e8c03e)
+![IMG_2233](https://github.com/user-attachments/assets/4beb7e52-ba61-4308-890e-b0ccd984a271)
+![IMG_2235](https://github.com/user-attachments/assets/c6abd0a7-8fee-4c18-b6b7-55796c1d7c45)
+
 
 👉 Ver Projeto Online (Live Demo)
+
+http://awaldige.infinityfree.me/ecommerce/
 
 
 💻 Ambiente de Testes: Utilize o modo demonstração no login para explorar as métricas.
