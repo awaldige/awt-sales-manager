@@ -1,51 +1,113 @@
 🛒 AWT Sales Manager
-Sistema de Gestão de Vendas e Controle de Estoque de Alta Performance
-O AWT Sales Manager é uma solução robusta desenvolvida para otimizar o fluxo comercial de pequenas e médias empresas. O sistema integra o gerenciamento de produtos, controle de estoque em tempo real e registro detalhado de vendas, oferecendo uma interface intuitiva e focada na eficiência operacional.
 
-🚀 Funcionalidades Principais
-Dashboard de Vendas: Visualização clara de métricas e performance comercial.
+🚀 ERP Inteligente para Gestão Comercial e Estoque
+<p align="center"> <img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-orange?style=for-the-badge" /> <img src="https://img.shields.io/badge/Backend-PHP%208-blue?style=for-the-badge" /> <img src="https://img.shields.io/badge/Frontend-TailwindCSS-38B2AC?style=for-the-badge" /> <img src="https://img.shields.io/badge/Database-MySQL-00758F?style=for-the-badge" /> </p> <p align="center"> <b>Transformando processos comerciais em inteligência de negócio</b> </p>
 
-Gestão de Inventário: Controle rigoroso de entrada e saída de produtos com alertas de estoque baixo.
+🖥️ Demonstração Visual
 
-Registro de Transações: Histórico detalhado de vendas com filtros avançados.
 
-Arquitetura Escalável: Estrutura preparada para integração com APIs externas e expansão de módulos.
 
-Interface Responsiva: Otimizada para uso em desktops e dispositivos móveis (Mobile First).
+🔗 Acesse o Sistema
 
-🧠 Stack Técnica
-Este projeto utiliza tecnologias modernas para garantir estabilidade, velocidade e segurança:
 
-Frontend: HTML5, CSS3 (Modern Layout), JavaScript ES6+.
+👉 🔴 Ver Projeto Online
 
-Backend: PHP 8.x / Node.js.
+💡 Sobre o Projeto
 
-Banco de Dados: MySQL / PostgreSQL (Modelagem Relacional e Integridade de Dados).
+O AWT Sales Manager é um sistema ERP Full-Stack desenvolvido para automatizar e otimizar operações comerciais.
 
-Ferramentas: Git, GitHub, e deploy via Vercel/Render.
+✔ Substitui controles manuais
+✔ Centraliza dados estratégicos
+✔ Facilita decisões com base em métricas reais
 
-🛠️ Como Executar o Projeto
-Clone o repositório:
+🚀 Funcionalidades
 
-Bash
-git clone https://github.com/awaldige/awt-sales-manager.git
-Configure o Banco de Dados:
+📊 Gestão Inteligente
+Dashboard com métricas em tempo real
+Indicadores de lucro, faturamento e investimento
 
-Importe o arquivo .sql disponível na pasta /database.
+📦 Controle Completo
+Gestão de estoque
+Cadastro de produtos e categorias
+Controle de fornecedores
 
-Configure as credenciais no arquivo de conexão (config.php ou .env).
+🔐 Segurança & Acesso
+Login administrativo
+Controle de permissões
+Modo demonstração
 
-Inicie o servidor local:
+📱 Experiência do Usuário
+Design responsivo (Mobile First)
+Interface moderna e intuitiva
+Navegação otimizada
 
-(Ex: npm start ou utilize um servidor Apache/XAMPP).
+🧠 Arquitetura do Sistema
+📁 awt-sales-manager
+ ┣ 📂 assets
+ ┣ 📂 database
+ ┣ 📂 includes
+ ┣ 📂 pages
+ ┣ 📜 config.php
+ ┣ 📜 index.php
+ ┗ 📜 README.md
+ 
+🧪 Stack Tecnológica
+Camada	Tecnologia
+Frontend	HTML5, Tailwind CSS, JavaScript
+Backend	PHP 8 (modular)
+Banco	MySQL
+Deploy	Apache / Linux / Render
 
-📈 Diferenciais de Engenharia
-Diferente de sistemas de vendas genéricos, o AWT Sales Manager foi construído seguindo princípios de Clean Code e Engenharia de Requisitos, garantindo que a regra de negócio de cálculo de impostos, descontos e fluxo de caixa seja precisa e segura.
+🛠️ Como Rodar Localmente
+# Clone o projeto
+git clone 
 
-Este projeto reflete a minha base sólida em Análise e Desenvolvimento de Sistemas, focando na transformação de processos manuais em fluxos digitais inteligentes e automatizados.
+⚙️ Configuração
+Importar /database/banco.sql no MySQL
+Configurar config.php
+Rodar com XAMPP ou WAMP
 
-📧 Contato
-Desenvolvido por André Waldige 
+📈 Diferenciais Técnicos
 
-"Construindo ferramentas que impulsionam resultados através da tecnologia."
+🚀 Alta Performance
 
+Interface otimizada com Tailwind
+
+🛡️ Segurança Aplicada
+
+Sanitização de inputs
+Proteção de rotas
+
+🧩 Código Escalável
+
+Estrutura modular
+Fácil manutenção
+
+💡 Pensado para Negócio Real
+
+Fluxo baseado em operação comercial
+
+🎯 Roadmap
+ API REST completa
+ Autenticação com JWT
+ Dashboard com gráficos avançados
+ Versão SaaS (multi-empresa)
+ 
+👨‍💻 Desenvolvedor
+
+André Waldige
+💻 Web Developer | 🤖 IA & Sistemas Inteligentes
+
+"Tecnologia não é só código — é resultado."
+
+⭐ Apoie o Projeto
+
+Se curtiu o projeto:
+
+⭐ Dê uma estrela no repositório
+🔗 Compartilhe com outros devs
+💼 Use como referência no portfólio
+📌 Status
+
+🚧 Em evolução contínua
+🔥 Novas funcionalidades em desenvolvimento
