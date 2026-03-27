@@ -1,113 +1,48 @@
 🛒 AWT Sales Manager
 
-🚀 ERP Inteligente para Gestão Comercial e Estoque
-<p align="center"> <img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-orange?style=for-the-badge" /> <img src="https://img.shields.io/badge/Backend-PHP%208-blue?style=for-the-badge" /> <img src="https://img.shields.io/badge/Frontend-TailwindCSS-38B2AC?style=for-the-badge" /> <img src="https://img.shields.io/badge/Database-MySQL-00758F?style=for-the-badge" /> </p> <p align="center"> <b>Transformando processos comerciais em inteligência de negócio</b> </p>
+🚀 ERP Inteligente para Gestão Comercial e EstoqueTransformando processos comerciais em inteligência de negócio.
 
-🖥️ Demonstração Visual
-
+🔗 Demonstração Visual & Acesso
 
 
-🔗 Acesse o Sistema
+👉 Ver Projeto Online (Live Demo)
 
 
-👉 🔴 Ver Projeto Online
+💻 Ambiente de Testes: Utilize o modo demonstração no login para explorar as métricas.
 
-💡 Sobre o Projeto
+💡 Sobre o ProjetoO AWT Sales Manager é um sistema ERP Full-Stack desenvolvido para automatizar e otimizar operações comerciais de pequeno e médio porte.
 
-O AWT Sales Manager é um sistema ERP Full-Stack desenvolvido para automatizar e otimizar operações comerciais.
+✔ Substitui controles manuais (planilhas e papel).
 
-✔ Substitui controles manuais
-✔ Centraliza dados estratégicos
-✔ Facilita decisões com base em métricas reais
+✔ Centraliza dados estratégicos em uma única interface.
 
-🚀 Funcionalidades
+✔ Facilita decisões com base em métricas reais de lucro e investimento.
 
-📊 Gestão Inteligente
-Dashboard com métricas em tempo real
-Indicadores de lucro, faturamento e investimento
+🗄️ Modelagem de Dados (Engenharia de Software)O sistema foi construído sobre uma base relacional sólida para garantir a integridade das informações e a escalabilidade do negócio.Diagrama de Entidade-Relacionamento (ERD)Abaixo, a representação visual de como as tabelas (Produtos, Vendas, Fornecedores e Clientes) se conectam:<div align="center"><img src="database/database-erd.png" alt="Diagrama de Banco de Dados AWT" width="100%"></div>Instalação do Banco: O script completo para recriar esta estrutura está disponível em /database/database.sql.
 
-📦 Controle Completo
-Gestão de estoque
-Cadastro de produtos e categorias
-Controle de fornecedores
+🚀 Funcionalidades Principais
 
-🔐 Segurança & Acesso
-Login administrativo
-Controle de permissões
-Modo demonstração
+📊 Dashboard em Tempo Real: Indicadores de faturamento, custo de mercadoria e lucro líquido.
 
-📱 Experiência do Usuário
-Design responsivo (Mobile First)
-Interface moderna e intuitiva
-Navegação otimizada
+📦 Controle de Inventário: Gestão de estoque com alertas de reposição e categorias dinâmicas.
 
-🧠 Arquitetura do Sistema
-📁 awt-sales-manager
- ┣ 📂 assets
- ┣ 📂 database
- ┣ 📂 includes
- ┣ 📂 pages
- ┣ 📜 config.php
- ┣ 📜 index.php
- ┗ 📜 README.md
- 
-🧪 Stack Tecnológica
-Camada	Tecnologia
-Frontend	HTML5, Tailwind CSS, JavaScript
-Backend	PHP 8 (modular)
-Banco	MySQL
-Deploy	Apache / Linux / Render
+🔐 Segurança: Autenticação robusta, criptografia de senhas e proteção contra SQL Injection.
 
-🛠️ Como Rodar Localmente
-# Clone o projeto
-git clone 
+📱 Mobile First: Interface 100% responsiva desenvolvida com Tailwind CSS para acesso via smartphone.
 
-⚙️ Configuração
-Importar /database/banco.sql no MySQL
-Configurar config.php
-Rodar com XAMPP ou WAMP
+🧠 Arquitetura e StackCamadaTecnologiaFrontendHTML5, Tailwind CSS, JavaScript (ES6)BackendPHP 8.x (Estrutura Modular)Banco de DadosMySQL (Relacional/InnoDB)InfraestruturaApache / Linux / InfinityFree
 
-📈 Diferenciais Técnicos
+🛠️ Como Rodar LocalmenteClone o repositório:Bashgit clone https://github.com/awaldige/awt-sales-manager.git
+Configuração do Banco:Crie um banco de dados no seu MySQL (XAMPP/WAMP).Importe o arquivo /database/database.sql.Configuração do PHP:Ajuste as credenciais no arquivo config.php.Acesso:Mova a pasta para o htdocs e acesse localhost/awt-sales-manager.
 
-🚀 Alta Performance
+👨‍💻 DesenvolvedorAndré Waldige
 
-Interface otimizada com Tailwind
+💻 Web Developer Freelancer
 
-🛡️ Segurança Aplicada
+🤖 Especialista em IA & Transformação Digital"Tecnologia não é só código — é resultado."
 
-Sanitização de inputs
-Proteção de rotas
+⭐ Apoie o ProjetoSe este sistema foi útil para você ou serviu de inspiração:
 
-🧩 Código Escalável
+⭐ Dê uma estrela no repositório.
 
-Estrutura modular
-Fácil manutenção
-
-💡 Pensado para Negócio Real
-
-Fluxo baseado em operação comercial
-
-🎯 Roadmap
- API REST completa
- Autenticação com JWT
- Dashboard com gráficos avançados
- Versão SaaS (multi-empresa)
- 
-👨‍💻 Desenvolvedor
-
-André Waldige
-💻 Web Developer | 🤖 IA & Sistemas Inteligentes
-
-"Tecnologia não é só código — é resultado."
-
-⭐ Apoie o Projeto
-
-Se curtiu o projeto:
-
-⭐ Dê uma estrela no repositório
-🔗 Compartilhe com outros devs
-💼 Use como referência no portfólio
-📌 Status
-
-🚧 Em evolução contínua
-🔥 Novas funcionalidades em desenvolvimento
+💼 Conecte-se comigo para projetos personalizados.
