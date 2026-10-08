@@ -16,7 +16,7 @@ O projeto foi desenvolvido com foco em **organização operacional, acompanhamen
 
 ---
 
-##📊 Funcionalidades
+## 📊 Funcionalidades
 
 - Dashboard
 - Indicadores de vendas
@@ -26,7 +26,7 @@ O projeto foi desenvolvido com foco em **organização operacional, acompanhamen
 - Resumo das operações
 - Visão geral do negócio
 
-##🛒 Gestão de Vendas
+## 🛒 Gestão de Vendas
 
 - Cadastro e gerenciamento de vendas
 - Controle de pedidos
@@ -34,7 +34,7 @@ O projeto foi desenvolvido com foco em **organização operacional, acompanhamen
 - Acompanhamento das operações comerciais
 - Geração de documentos em PDF
 
-##📦 Gestão de Estoque
+## 📦 Gestão de Estoque
 
 - Cadastro de produtos
 - Controle de estoque
@@ -43,19 +43,19 @@ O projeto foi desenvolvido com foco em **organização operacional, acompanhamen
 - Alertas de estoque
 - Controle de disponibilidade dos produtos
 
-##👥 Gestão de Clientes
+## 👥 Gestão de Clientes
 
 - Cadastro de clientes
 - Consulta de informações
 - Organização da base de clientes
 
-##🏢 Gestão de Fornecedores
+## 🏢 Gestão de Fornecedores
 
 - Cadastro de fornecedores
 - Consulta de informações
 - Organização dos fornecedores
 
-##📈 Indicadores
+## 📈 Indicadores
 
 - Faturamento
 - Custos
@@ -63,7 +63,7 @@ O projeto foi desenvolvido com foco em **organização operacional, acompanhamen
 - Informações operacionais
 - Indicadores para acompanhamento da gestão
 
-##🧠 Arquitetura
+## 🧠 Arquitetura
 
 O sistema utiliza uma arquitetura web baseada em PHP, MySQL, HTML, Tailwind CSS e JavaScript.
 
@@ -85,7 +85,7 @@ O sistema utiliza uma arquitetura web baseada em PHP, MySQL, HTML, Tailwind CSS 
 │                 MySQL                │
 └──────────────────────────────────────┘
 
-##🛠️ Tecnologias
+## 🛠️ Tecnologias
 
 - Camada	Tecnologia
 - Backend	PHP 8.x
@@ -96,7 +96,7 @@ O sistema utiliza uma arquitetura web baseada em PHP, MySQL, HTML, Tailwind CSS 
 - Geração de documentos	PDF
 - Servidor	Apache / Linux
 
-##🔐 Segurança
+## 🔐 Segurança
 
 O sistema utiliza recursos de segurança para proteção das operações administrativas e dos dados da aplicação, incluindo:
 
@@ -106,7 +106,7 @@ O sistema utiliza recursos de segurança para proteção das operações adminis
 - Consultas ao banco de dados com parâmetros
 - Separação das operações administrativas
 
-##📱 Interface Responsiva
+## 📱 Interface Responsiva
 
 A interface foi desenvolvida para funcionar em diferentes tamanhos de tela, proporcionando uma experiência adequada em:
 
@@ -115,7 +115,7 @@ A interface foi desenvolvida para funcionar em diferentes tamanhos de tela, prop
 📱 Tablet
 📱 Smartphone
 
-##📁 Estrutura do Projeto
+## 📁 Estrutura do Projeto
 awt-sales-manager/
 │
 ├── assets/
@@ -130,7 +130,7 @@ awt-sales-manager/
 
 A estrutura acima representa a organização geral do sistema. Os diretórios podem variar conforme a versão do projeto.
 
-##⚙️ Como Executar Localmente
+## ⚙️ Como Executar Localmente
 
 1. Clonar o repositório
 git clone https://github.com/awaldige/awt-sales-manager.git
@@ -159,7 +159,7 @@ Exemplo:
 
 http://localhost/awt-sales-manager/
 
-##💡 Destaques Técnicos
+## 💡 Destaques Técnicos
 
 - Arquitetura Full Stack baseada em PHP
 - Banco de dados relacional MySQL
@@ -173,7 +173,7 @@ http://localhost/awt-sales-manager/
 - Interface responsiva
 - Organização modular das funcionalidades
 
-##🔗 Demonstração Visual & Acesso
+## 🔗 Demonstração Visual & Acesso
 
 ![Captura de tela 2026-04-01 210346](https://github.com/user-attachments/assets/ba8dd1f8-1aff-4493-b54a-fa56b242795a)
 ![Captura de tela 2026-04-01 210332](https://github.com/user-attachments/assets/62ab319a-01f4-4e74-8644-0815376c7990)
@@ -188,22 +188,22 @@ http://localhost/awt-sales-manager/
 
 http://awaldige.infinityfree.me/ecommerce/
 
-##🎯 Objetivo do Projeto
+## 🎯 Objetivo do Projeto
 
 O AWT Sales Manager foi desenvolvido como uma solução de gestão comercial para demonstrar a aplicação prática de tecnologias web na construção de sistemas administrativos.
 
 O projeto também faz parte do portfólio profissional da AW TECHNOLOGY, demonstrando conhecimentos em desenvolvimento Full Stack, sistemas ERP, banco de dados, gestão comercial e interfaces administrativas.
 
-##👨‍💻 Autor
+## 👨‍💻 Autor
 
 André Waldige — AW TECHNOLOGY
 
 Full Stack Web Developer
 
-##🔗 GitHub:
+## 🔗 GitHub:
 https://github.com/awaldige
 
-##📄 Licença
+## 📄 Licença
 
 Este projeto foi desenvolvido para fins de portfólio e demonstração técnica.
 
