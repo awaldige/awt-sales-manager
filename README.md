@@ -6,7 +6,7 @@ O AWT Sales Manager reúne recursos para gerenciamento de vendas, compras, produ
 
 ## Demonstração online
 
-**Acesse:** https://awt-sales-manager.onrender.com/
+**Acesse:** http://awaldige.infinityfree.me/ecommerce/
 
 ## Funcionalidades
 
