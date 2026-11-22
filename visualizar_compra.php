@@ -53,98 +53,175 @@ $itens = $stmtItens->get_result();
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta charset="UTF-8">
-    <title>Detalhes da Compra | ERP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Compra | AWT Sales Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body class="bg-slate-50 p-6 md:p-12">
+<body class="min-h-screen bg-slate-100 p-4 sm:p-6 lg:p-8">
 
-    <div class="max-w-4xl mx-auto">
-        
-        <a href="compra.php" class="inline-flex items-center text-slate-400 hover:text-slate-600 font-bold text-xs uppercase tracking-widest mb-8 transition">
-            <i class="fas fa-arrow-left mr-2"></i> Voltar para a lista
+    <main class="max-w-5xl mx-auto">
+        <a href="compra.php" class="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold text-xs uppercase tracking-wider mb-6 transition">
+            <i class="fas fa-arrow-left"></i>
+            Voltar para Gestão de Compras
         </a>
 
-        <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200 border border-slate-100 overflow-hidden">
-            
-            <div class="p-8 md:p-12 bg-slate-900 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                    <span class="text-blue-400 font-black text-[10px] uppercase tracking-[0.3em]">Resumo da Entrada</span>
-                    <h1 class="text-3xl font-black italic uppercase tracking-tighter"><?= $dados['codigo_controle'] ?></h1>
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+            <header class="bg-slate-900 text-white p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+                <div class="min-w-0">
+                    <span class="text-blue-400 font-bold text-[10px] uppercase tracking-[0.2em]">Resumo da Entrada</span>
+                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight mt-2 break-all">
+                        <?= htmlspecialchars($dados['codigo_controle'], ENT_QUOTES, 'UTF-8') ?>
+                    </h1>
+                    <p class="text-slate-400 text-xs mt-2">Detalhamento dos produtos e valores da compra</p>
                 </div>
-                <div class="text-right">
-                    <div class="px-4 py-2 rounded-full bg-white/10 border border-white/20 font-black text-[10px] uppercase tracking-widest">
-                        Status: <?= $dados['StatusCompra'] ?>
+
+                <div class="shrink-0">
+                    <?php if ($dados['StatusCompra'] === 'Recebido'): ?>
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 font-bold text-xs uppercase">
+                            <i class="fas fa-check-circle"></i>
+                            <?= htmlspecialchars($dados['StatusCompra'], ENT_QUOTES, 'UTF-8') ?>
+                        </span>
+                    <?php else: ?>
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/15 border border-amber-400/30 text-amber-300 font-bold text-xs uppercase">
+                            <i class="fas fa-clock"></i>
+                            <?= htmlspecialchars($dados['StatusCompra'], ENT_QUOTES, 'UTF-8') ?>
+                        </span>
+                    <?php endif; ?>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 p-5 sm:p-8 border-b border-slate-100">
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-5">
+                    <div class="flex items-center gap-2 text-slate-400 mb-3">
+                        <i class="fas fa-truck text-sm"></i>
+                        <h2 class="text-[10px] font-black uppercase tracking-widest">Fornecedor</h2>
                     </div>
+                    <p class="text-lg font-bold text-slate-800 break-words">
+                        <?= htmlspecialchars($dados['RazaoSocial'] ?? '', ENT_QUOTES, 'UTF-8') ?>
+                    </p>
+                    <p class="text-sm text-slate-500 mt-1 break-all">
+                        <?= htmlspecialchars($dados['FornecedorEmail'] ?? '', ENT_QUOTES, 'UTF-8') ?>
+                    </p>
+                </div>
+
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-5">
+                    <div class="flex items-center gap-2 text-slate-400 mb-3">
+                        <i class="fas fa-calendar-alt text-sm"></i>
+                        <h2 class="text-[10px] font-black uppercase tracking-widest">Data e Pagamento</h2>
+                    </div>
+                    <p class="text-lg font-bold text-slate-800">
+                        <?= date('d/m/Y', strtotime($dados['DataCompra'])) ?>
+                    </p>
+                    <p class="text-sm text-blue-600 font-bold mt-1">
+                        <?= htmlspecialchars($dados['FormaPgto'] ?? '', ENT_QUOTES, 'UTF-8') ?>
+                    </p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 md:p-12 border-b border-slate-50">
-                <div>
-                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Fornecedor</h3>
-                    <p class="text-xl font-bold text-slate-800"><?= $dados['RazaoSocial'] ?></p>
-                    <p class="text-sm text-slate-500 italic"><?= $dados['FornecedorEmail'] ?></p>
-                </div>
-                <div class="md:text-right">
-                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Data e Pagamento</h3>
-                    <p class="text-slate-700 font-bold"><?= date('d/m/Y', strtotime($dados['DataCompra'])) ?></p>
-                    <p class="text-sm text-indigo-500 font-black uppercase tracking-tighter"><?= $dados['FormaPgto'] ?></p>
-                </div>
-            </div>
-
-            <div class="p-8 md:p-12">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
-                            <th class="pb-4">Produto</th>
-                            <th class="pb-4 text-center">Qtd</th>
-                            <th class="pb-4 text-right">Unitário</th>
-                            <th class="pb-4 text-right">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50">
-                        <?php 
-                        $totalGeral = 0;
-                        while($item = $itens->fetch_assoc()): 
-                            $totalGeral += $item['ValorTotal'];
-                        ?>
-                        <tr>
-                            <td class="py-4 font-bold text-slate-700"><?= $item['Descricao'] ?></td>
-                            <td class="py-4 text-center font-black text-slate-400 text-sm"><?= $item['quantidade'] ?></td>
-                            <td class="py-4 text-right text-slate-500 text-sm">R$ <?= number_format($item['valor_unit'], 2, ',', '.') ?></td>
-                            <td class="py-4 text-right font-black text-slate-900 uppercase tracking-tighter">R$ <?= number_format($item['ValorTotal'], 2, ',', '.') ?></td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" class="pt-8 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Valor Total da Nota</td>
-                            <td class="pt-8 text-right font-black text-3xl text-indigo-600 tracking-tighter">R$ <?= number_format($totalGeral, 2, ',', '.') ?></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-
-            <?php if($dados['arquivo_nf']): ?>
-            <div class="p-8 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-red-500 shadow-sm border border-slate-200">
-                        <i class="fas fa-file-pdf text-xl"></i>
+            <div class="p-5 sm:p-8">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <i class="fas fa-boxes-stacked"></i>
                     </div>
                     <div>
-                        <p class="text-xs font-black text-slate-800 uppercase italic">Nota Fiscal Anexa</p>
-                        <p class="text-[10px] text-slate-400"><?= $dados['arquivo_nf'] ?></p>
+                        <h2 class="text-sm font-black text-slate-800 uppercase">Produtos da Compra</h2>
+                        <p class="text-xs text-slate-400 mt-1">Itens registrados nesta entrada</p>
                     </div>
                 </div>
-                <a href="uploads/<?= $dados['arquivo_nf'] ?>" target="_blank" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition shadow-lg shadow-indigo-100">
-                    <i class="fas fa-download mr-2"></i> Abrir Documento
-                </a>
-            </div>
-            <?php endif; ?>
 
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full min-w-[650px] text-left">
+                        <thead class="bg-slate-50">
+                            <tr class="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                                <th class="px-5 py-4">Produto</th>
+                                <th class="px-5 py-4 text-center">Quantidade</th>
+                                <th class="px-5 py-4 text-right">Valor Unitário</th>
+                                <th class="px-5 py-4 text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <?php
+                            $totalGeral = 0;
+                            while($item = $itens->fetch_assoc()):
+                                $totalGeral += $item['ValorTotal'];
+                            ?>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-5 py-4 font-semibold text-slate-700">
+                                    <?= htmlspecialchars($item['Descricao'] ?? '', ENT_QUOTES, 'UTF-8') ?>
+                                </td>
+                                <td class="px-5 py-4 text-center font-bold text-slate-500 text-sm">
+                                    <?= $item['quantidade'] ?>
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-500 text-sm whitespace-nowrap">
+                                    R$ <?= number_format($item['valor_unit'], 2, ',', '.') ?>
+                                </td>
+                                <td class="px-5 py-4 text-right font-bold text-slate-800 whitespace-nowrap">
+                                    R$ <?= number_format($item['ValorTotal'], 2, ',', '.') ?>
+                                </td>
+                            </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                        <tfoot class="bg-slate-50">
+                            <tr>
+                                <td colspan="3" class="px-5 py-5 text-right text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                                    Valor Total da Nota
+                                </td>
+                                <td class="px-5 py-5 text-right font-black text-xl sm:text-2xl text-blue-600 whitespace-nowrap">
+                                    R$ <?= number_format($totalGeral, 2, ',', '.') ?>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <?php
+    $nomeArquivoNF = basename((string)($dados['arquivo_nf'] ?? ''));
+    $caminhoArquivoNF = __DIR__ . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $nomeArquivoNF;
+    $arquivoNFDisponivel = $nomeArquivoNF !== '' && is_file($caminhoArquivoNF);
+?>
+
+<?php if (!empty($dados['arquivo_nf'])): ?>
+<div class="p-5 sm:p-8 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5">
+    <div class="flex items-center gap-4 min-w-0">
+        <div class="w-12 h-12 shrink-0 bg-white rounded-xl flex items-center justify-center text-red-500 border border-slate-200 shadow-sm">
+            <i class="fas fa-file-pdf text-xl"></i>
+        </div>
+        <div class="min-w-0">
+            <p class="text-xs font-black text-slate-800 uppercase">Nota Fiscal Anexa</p>
+            <p class="text-xs text-slate-500 mt-1 break-all">
+                <?= htmlspecialchars($nomeArquivoNF, ENT_QUOTES, 'UTF-8') ?>
+            </p>
         </div>
     </div>
+
+    <?php if ($arquivoNFDisponivel): ?>
+        <a href="uploads/<?= rawurlencode($nomeArquivoNF) ?>" target="_blank" rel="noopener noreferrer" class="inline-flex justify-center items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-blue-600 transition shadow-sm">
+            <i class="fas fa-external-link-alt"></i>
+            Abrir Documento
+        </a>
+    <?php else: ?>
+        <div class="inline-flex items-center gap-2 text-amber-700 bg-amber-50 border border-amber-200 px-4 py-3 rounded-xl text-xs font-semibold">
+            <i class="fas fa-info-circle"></i>
+            Documento não disponível nesta demonstração.
+        </div>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
+        </section>
+    </main>
 
 </body>
 </html>

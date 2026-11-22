@@ -1,0 +1,20 @@
+# Configuracoes locais e credenciais
+/config.php
+.env
+.env.*
+!.env.example
+
+# Arquivos enviados pela aplicacao
+/uploads/*
+!/uploads/.gitkeep
+
+# Backups e arquivos temporarios
+*.backup*
+*.bak
+*.tmp
+*.log
+
+# Sistema operacional e editor
+.DS_Store
+Thumbs.db
+.vscode/
