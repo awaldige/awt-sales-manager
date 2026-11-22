@@ -17,6 +17,7 @@ $totalGeral = 0;
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta charset="UTF-8">
     <title>Recibo_<?= $cod ?></title>
     <style>

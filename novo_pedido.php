@@ -1,123 +1,262 @@
 <?php
-session_start();
-include 'config.php';
-include 'auth.php';
+require_once 'auth.php';
+require_once 'config.php';
 
-// 1. Busca clientes
-$clientes = $conn->query("SELECT idCliente, Pnome, Sobrenome FROM cliente ORDER BY Pnome ASC");
-
-// 2. Busca produtos (Ajustado para suas colunas reais: idProduto, Descricao, precoVenda, estoque)
-$produtos_json = [];
-try {
-    $res_produtos = $conn->query("SELECT idProduto, Descricao, precoVenda, estoque FROM produtos WHERE estoque > 0 ORDER BY Descricao ASC");
-    while($p = $res_produtos->fetch_assoc()){
-        $produtos_json[] = $p;
-    }
-} catch (mysqli_sql_exception $e) {
-    die("Erro: Verifique se a tabela se chama 'produtos' ou 'produto'. Erro atual: " . $e->getMessage());
+if (empty($_SESSION['csrf_nova_venda'])) {
+    $_SESSION['csrf_nova_venda'] = bin2hex(random_bytes(32));
 }
+
+$erro = $_SESSION['erro_venda'] ?? null;
+unset($_SESSION['erro_venda']);
+
+$clientes = $conn->query(
+    "SELECT idCliente, Pnome, Sobrenome FROM cliente ORDER BY Pnome ASC"
+);
+
+$formas_pgto = $conn->query(
+    "SELECT idFormaPagamento, Tipo FROM formapagamento ORDER BY Tipo ASC"
+);
+
+$produtos_json = [];
+$res_produtos = $conn->query(
+    "SELECT idProduto, Descricao, precoVenda, estoque
+     FROM produtos
+     WHERE estoque > 0
+     ORDER BY Descricao ASC"
+);
+
+while ($produto = $res_produtos->fetch_assoc()) {
+    $produtos_json[] = [
+        'idProduto' => (int) $produto['idProduto'],
+        'Descricao' => $produto['Descricao'],
+        'precoVenda' => (float) $produto['precoVenda'],
+        'estoque' => (int) $produto['estoque']
+    ];
+}
+
+$jsonProdutos = json_encode(
+    $produtos_json,
+    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+);
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta charset="UTF-8">
-    <title>Novo Pedido | AWTecnology</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Venda | AWT Sales Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 p-6 md:p-12 text-slate-800">
+<body class="bg-slate-50 p-4 sm:p-6 lg:p-8 text-slate-800">
 
-    <div class="max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-10">
-            <a href="pedidos.php" class="text-slate-400 hover:text-blue-600 transition-all flex items-center gap-2 font-black uppercase text-[10px] tracking-widest">
-                <i class="fas fa-arrow-left"></i> Voltar
-            </a>
-            <h1 class="text-2xl font-black uppercase italic text-slate-900">Novo <span class="text-blue-600">Pedido</span></h1>
-        </div>
-
-        <form action="processar_venda.php" method="POST">
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100 mb-6">
-                <label class="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-4">Cliente</label>
-                <select name="idCliente" required class="w-full bg-slate-50 border-none rounded-2xl p-4 font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                    <option value="">Selecione o cliente...</option>
-                    <?php foreach($clientes as $c): ?>
-                        <option value="<?= $c['idCliente'] ?>"><?= $c['Pnome'] ?> <?= $c['Sobrenome'] ?></option>
-                    <?php endforeach; ?>
-                </select>
+    <main class="max-w-5xl mx-auto">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+            <div>
+                <a href="pedidos.php" class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-blue-600">
+                    <i class="fas fa-arrow-left mr-2"></i>Voltar aos pedidos
+                </a>
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 mt-3">
+                    Nova <span class="text-blue-600">Venda</span>
+                </h1>
+                <p class="text-sm text-slate-500 mt-1">Registre uma venda com um ou mais produtos.</p>
             </div>
+            <a href="index.php" class="bg-white border border-slate-200 rounded-xl px-5 py-3 text-xs font-bold text-slate-600 hover:bg-slate-100">
+                <i class="fas fa-house mr-2"></i> Painel
+            </a>
+        </header>
 
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Produtos</h2>
-                    <button type="button" onclick="adicionarLinha()" class="text-blue-600 font-black text-[10px] uppercase tracking-widest hover:underline">
-                        + Adicionar Item
+        <?php if ($erro): ?>
+            <div class="mb-6 p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm font-semibold">
+                <?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?>
+            </div>
+        <?php endif; ?>
+
+        <form action="processar_venda.php" method="POST" id="form-venda">
+            <input type="hidden" name="csrf_token"
+                   value="<?= htmlspecialchars($_SESSION['csrf_nova_venda'], ENT_QUOTES, 'UTF-8') ?>">
+
+            <section class="bg-white p-5 md:p-7 rounded-2xl shadow-sm border border-slate-200 mb-6">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Dados da venda</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="idCliente" class="block text-xs font-bold text-slate-600 mb-2">Cliente</label>
+                        <select name="idCliente" id="idCliente" required
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-semibold text-slate-700">
+                            <option value="">Selecione o cliente...</option>
+                            <?php while ($cliente = $clientes->fetch_assoc()): ?>
+                                <option value="<?= (int) $cliente['idCliente'] ?>">
+                                    <?= htmlspecialchars($cliente['Pnome'] . ' ' . $cliente['Sobrenome'], ENT_QUOTES, 'UTF-8') ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="idFormaPagamento" class="block text-xs font-bold text-slate-600 mb-2">Forma de pagamento</label>
+                        <select name="idFormaPagamento" id="idFormaPagamento" required
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-semibold text-slate-700">
+                            <option value="">Selecione a forma de pagamento...</option>
+                            <?php while ($forma = $formas_pgto->fetch_assoc()): ?>
+                                <option value="<?= (int) $forma['idFormaPagamento'] ?>">
+                                    <?= htmlspecialchars($forma['Tipo'], ENT_QUOTES, 'UTF-8') ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white p-5 md:p-7 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Produtos da venda</h2>
+                        <p class="text-xs text-slate-400 mt-1">Adicione os produtos e suas respectivas quantidades.</p>
+                    </div>
+                    <button type="button" id="adicionar-item"
+                            class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-4 py-3 rounded-xl text-xs font-bold">
+                        <i class="fas fa-plus mr-2"></i>Adicionar produto
                     </button>
                 </div>
 
                 <div id="container-produtos" class="space-y-4"></div>
 
-                <div class="mt-10 pt-8 border-t border-slate-50 flex justify-between items-center">
+                <div class="mt-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <span class="block text-[10px] font-black uppercase text-slate-400 tracking-widest">Total</span>
-                        <span class="text-3xl font-black italic text-slate-900">R$ <span id="valorTotalExibido">0,00</span></span>
-                        <input type="hidden" name="valorFinalTotal" id="inputTotalOculto" value="0">
+                        <span class="block text-xs font-bold uppercase text-slate-500">Total estimado</span>
+                        <span class="text-3xl font-extrabold text-slate-900">
+                            R$ <span id="valorTotalExibido">0,00</span>
+                        </span>
+                        <p class="text-xs text-slate-400 mt-1">O valor definitivo será calculado pelo servidor.</p>
                     </div>
-                    <button type="submit" class="bg-blue-600 text-white px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all">
-                        Finalizar Venda
+                    <button type="submit"
+                            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold uppercase text-xs tracking-wider shadow-lg shadow-blue-100">
+                        <i class="fas fa-check-circle mr-2"></i>Finalizar venda
                     </button>
                 </div>
-            </div>
+            </section>
         </form>
-    </div>
+    </main>
 
     <script>
-        const produtosDB = <?= json_encode($produtos_json) ?>;
-        let contador = 0;
+        const produtosDB = <?= $jsonProdutos ?: '[]' ?>;
+        const container = document.getElementById('container-produtos');
+        const totalExibido = document.getElementById('valorTotalExibido');
 
-        function adicionarLinha() {
-            const container = document.getElementById('container-produtos');
-            const id = `item-${contador}`;
-            const html = `
-                <div id="${id}" class="flex gap-4 p-4 bg-slate-50 rounded-2xl items-end">
-                    <div class="flex-1">
-                        <select name="produtos[]" onchange="atualizarPreco(this)" required class="w-full bg-white border-none rounded-xl p-3 font-bold text-slate-700 shadow-sm">
-                            <option value="">Produto...</option>
-                            ${produtosDB.map(p => `<option value="${p.idProduto}" data-preco="${p.precoVenda}">${p.Descricao} (Qtd: ${p.estoque})</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="w-20">
-                        <input type="number" name="quantidades[]" value="1" min="1" oninput="calcularTotal()" class="w-full bg-white border-none rounded-xl p-3 font-bold text-center">
-                    </div>
-                    <div class="w-24 font-black text-blue-600 preco-display">R$ 0,00</div>
-                    <button type="button" onclick="document.getElementById('${id}').remove(); calcularTotal();" class="text-slate-300 hover:text-red-500"><i class="fas fa-times"></i></button>
-                </div>
-            `;
-            container.insertAdjacentHTML('beforeend', html);
-            contador++;
-        }
-
-        function atualizarPreco(select) {
-            const preco = select.options[select.selectedIndex].dataset.preco || 0;
-            select.closest('div.flex').querySelector('.preco-display').innerText = 'R$ ' + parseFloat(preco).toLocaleString('pt-br', {minimumFractionDigits: 2});
-            calcularTotal();
+        function formatarMoeda(valor) {
+            return Number(valor).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
         }
 
         function calcularTotal() {
             let total = 0;
-            document.querySelectorAll('#container-produtos > div').forEach(linha => {
+
+            container.querySelectorAll('.linha-produto').forEach(linha => {
                 const select = linha.querySelector('select');
-                const preco = parseFloat(select.options[select.selectedIndex]?.dataset.preco || 0);
-                const qtd = parseInt(linha.querySelector('input[type="number"]').value || 0);
-                total += (preco * qtd);
+                const quantidade = Number(linha.querySelector('input').value);
+                const produto = produtosDB.find(p => p.idProduto === Number(select.value));
+
+                if (produto && Number.isInteger(quantidade) && quantidade > 0) {
+                    total += produto.precoVenda * quantidade;
+                }
+
+                linha.querySelector('.subtotal').textContent =
+                    'R$ ' + formatarMoeda(
+                        produto && quantidade > 0 ? produto.precoVenda * quantidade : 0
+                    );
             });
-            document.getElementById('valorTotalExibido').innerText = total.toLocaleString('pt-br', {minimumFractionDigits: 2});
-            document.getElementById('inputTotalOculto').value = total.toFixed(2);
+
+            totalExibido.textContent = formatarMoeda(total);
         }
+
+        function adicionarLinha() {
+            const linha = document.createElement('div');
+            linha.className = 'linha-produto grid grid-cols-1 sm:grid-cols-[1fr_110px_130px_40px] gap-3 items-end p-4 bg-slate-50 border border-slate-200 rounded-xl';
+
+            const grupoProduto = document.createElement('div');
+            const labelProduto = document.createElement('label');
+            labelProduto.className = 'block text-xs font-bold text-slate-600 mb-2';
+            labelProduto.textContent = 'Produto';
+
+            const select = document.createElement('select');
+            select.name = 'produtos[]';
+            select.required = true;
+            select.className = 'w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-semibold text-slate-700';
+            select.add(new Option('Selecione um produto...', ''));
+
+            produtosDB.forEach(produto => {
+                const opcao = new Option(
+                    `${produto.Descricao} (Estoque: ${produto.estoque})`,
+                    produto.idProduto
+                );
+                select.add(opcao);
+            });
+
+            grupoProduto.append(labelProduto, select);
+
+            const grupoQuantidade = document.createElement('div');
+            const labelQuantidade = document.createElement('label');
+            labelQuantidade.className = 'block text-xs font-bold text-slate-600 mb-2';
+            labelQuantidade.textContent = 'Quantidade';
+
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.name = 'quantidades[]';
+            input.min = '1';
+            input.max = '9999999';
+            input.value = '1';
+            input.required = true;
+            input.className = 'w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-semibold text-center';
+
+            grupoQuantidade.append(labelQuantidade, input);
+
+            const grupoSubtotal = document.createElement('div');
+            const labelSubtotal = document.createElement('span');
+            labelSubtotal.className = 'block text-xs font-bold text-slate-600 mb-2';
+            labelSubtotal.textContent = 'Subtotal';
+
+            const subtotal = document.createElement('div');
+            subtotal.className = 'subtotal font-bold text-blue-600 p-3';
+            subtotal.textContent = 'R$ 0,00';
+
+            grupoSubtotal.append(labelSubtotal, subtotal);
+
+            const remover = document.createElement('button');
+            remover.type = 'button';
+            remover.className = 'h-10 rounded-lg bg-white text-slate-400 hover:bg-red-500 hover:text-white';
+            remover.title = 'Remover produto';
+            remover.innerHTML = '<i class="fas fa-times"></i>';
+            remover.addEventListener('click', () => {
+                linha.remove();
+                calcularTotal();
+            });
+
+            select.addEventListener('change', calcularTotal);
+            input.addEventListener('input', calcularTotal);
+
+            linha.append(grupoProduto, grupoQuantidade, grupoSubtotal, remover);
+            container.appendChild(linha);
+            calcularTotal();
+        }
+
+        document.getElementById('adicionar-item').addEventListener('click', adicionarLinha);
+
+        document.getElementById('form-venda').addEventListener('submit', event => {
+            if (container.querySelectorAll('.linha-produto').length === 0) {
+                event.preventDefault();
+                alert('Adicione pelo menos um produto à venda.');
+            }
+        });
 
         adicionarLinha();
     </script>

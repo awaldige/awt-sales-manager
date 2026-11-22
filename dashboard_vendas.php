@@ -1,16 +1,17 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-include 'config.php'; 
+require_once 'auth.php';
+require_once 'config.php';
 
+restringirAdmin();
 // --- CONSULTA 1: CARDS DE RESUMO (Baseado na tabela 'pedido') ---
 $resumo_query = $conn->query("SELECT 
-    SUM(CASE WHEN StatusPedido = 'Confirmado' THEN ValorTotal ELSE 0 END) as total_recebido,
-    SUM(CASE WHEN StatusPedido = 'Pendente' THEN ValorTotal ELSE 0 END) as total_pendente,
+    SUM(CASE WHEN StatusPedido = 'Confirmado' THEN ValorTotal ELSE 0 END) as total_confirmado,
+    SUM(CASE WHEN StatusPedido = 'Em processamento' THEN ValorTotal ELSE 0 END) as total_processamento,
     COUNT(DISTINCT codigoVenda) as total_vendas
     FROM pedido");
 $resumo = $resumo_query ? $resumo_query->fetch_assoc() : [];
 
-// --- CONSULTA 2: FATURAMENTO POR MÊS ---
+// --- CONSULTA 2: FATURAMENTO POR MÃŠS ---
 $vendas_mes = $conn->query("SELECT 
     DATE_FORMAT(dataPedido, '%m/%Y') as mes, 
     SUM(ValorTotal) as total 
@@ -51,63 +52,115 @@ if($clientes_rank){
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta charset="UTF-8">
-    <title>Analytics de Vendas | AWTecnology</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Vendas | AWT Sales Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .chart-container { position: relative; height: 300px; width: 100%; }
     </style>
 </head>
-<body class="bg-slate-50 p-6">
-
-    <div class="max-w-7xl mx-auto">
-        <header class="flex justify-between items-center mb-10">
+<body class="min-h-screen bg-slate-100 text-slate-800">
+    <main class="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
+        <header class="mb-8 flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
             <div>
-                <h1 class="text-4xl font-black text-slate-900 uppercase italic">Analytics <span class="text-blue-600">Vendas</span></h1>
+                <div class="mb-2 flex items-center gap-3">
+                    <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg font-black text-white">AW</span>
+                    <span class="text-sm font-extrabold tracking-wide text-slate-700">AWT Sales Manager</span>
+                </div>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Indicadores e desempenho</p>
+                <h1 class="mt-1 text-2xl font-black text-slate-900 sm:text-3xl">Dashboard de Vendas</h1>
+                <p class="mt-1 text-sm text-slate-500">Acompanhe os resultados e o desempenho comercial.</p>
             </div>
-            <a href="pedidos.php" class="bg-slate-900 text-white p-4 px-8 rounded-2xl font-black text-[10px] uppercase">
-                <i class="fas fa-arrow-left mr-2"></i> Histórico de Vendas
+            <a href="pedidos.php" class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700">
+                <i class="fas fa-arrow-left"></i>
+                Histórico de vendas
             </a>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="bg-white p-8 rounded-[2rem] shadow-sm border-l-8 border-blue-500">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Faturamento Confirmado</p>
-                <h3 class="text-3xl font-black text-blue-600">R$ <?= number_format($resumo['total_recebido'] ?? 0, 2, ',', '.') ?></h3>
+        <section class="mb-8">
+            <div class="mb-4">
+                <h2 class="text-lg font-extrabold text-slate-900">Resumo comercial</h2>
+                <p class="text-sm text-slate-500">Visão geral dos pedidos registrados.</p>
             </div>
-            <div class="bg-white p-8 rounded-[2rem] shadow-sm border-l-8 border-purple-500">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aguardando Pagamento</p>
-                <h3 class="text-3xl font-black text-purple-500">R$ <?= number_format($resumo['total_pendente'] ?? 0, 2, ',', '.') ?></h3>
-            </div>
-            <div class="bg-white p-8 rounded-[2rem] shadow-sm border-l-8 border-slate-800">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total de Vendas (Qtd)</p>
-                <h3 class="text-3xl font-black text-slate-800"><?= $resumo['total_vendas'] ?? 0 ?></h3>
-            </div>
-        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-white p-10 rounded-[2rem] shadow-sm">
-                <h4 class="font-black text-slate-800 uppercase mb-6">Desempenho de Vendas</h4>
-                <div class="chart-container">
-                    <canvas id="chartMensal"></canvas>
-                </div>
-            </div>
-            
-            <div class="bg-white p-10 rounded-[2rem] shadow-sm">
-                <h4 class="font-black text-slate-800 uppercase mb-6">Top Clientes</h4>
-                <div class="chart-container">
-                    <canvas id="chartCliente"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <article class="rounded-2xl border border-slate-200 border-l-4 border-l-blue-600 bg-white p-5 shadow-sm sm:p-6">
+                    <div class="mb-4 flex items-center justify-between gap-3">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Pedidos confirmados</p>
+                        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600"><i class="fas fa-check-circle"></i></span>
+                    </div>
+                    <p class="text-2xl font-black text-slate-900 sm:text-3xl">R$ <?= number_format($resumo['total_confirmado'] ?? 0, 2, ',', '.') ?></p>
+                    <p class="mt-2 text-xs text-slate-500">Valor total dos pedidos confirmados</p>
+                </article>
 
-    <script>
-        // Configuração do Gráfico Mensal (Linha Azul)
+                <article class="rounded-2xl border border-slate-200 border-l-4 border-l-violet-500 bg-white p-5 shadow-sm sm:p-6">
+                    <div class="mb-4 flex items-center justify-between gap-3">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Em processamento</p>
+                        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600"><i class="fas fa-clock"></i></span>
+                    </div>
+                    <p class="text-2xl font-black text-slate-900 sm:text-3xl">R$ <?= number_format($resumo['total_processamento'] ?? 0, 2, ',', '.') ?></p>
+                    <p class="mt-2 text-xs text-slate-500">Valor total em processamento</p>
+                </article>
+
+                <article class="rounded-2xl border border-slate-200 border-l-4 border-l-slate-700 bg-white p-5 shadow-sm sm:col-span-2 sm:p-6 xl:col-span-1">
+                    <div class="mb-4 flex items-center justify-between gap-3">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total de vendas</p>
+                        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700"><i class="fas fa-shopping-cart"></i></span>
+                    </div>
+                    <p class="text-2xl font-black text-slate-900 sm:text-3xl"><?= $resumo['total_vendas'] ?? 0 ?></p>
+                    <p class="mt-2 text-xs text-slate-500">Quantidade de vendas registradas</p>
+                </article>
+            </div>
+        </section>
+
+        <section>
+            <div class="mb-4">
+                <h2 class="text-lg font-extrabold text-slate-900">Análise de desempenho</h2>
+                <p class="text-sm text-slate-500">Evolução do faturamento e principais clientes.</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                <article class="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                    <div class="mb-5 flex items-center gap-3">
+                        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600"><i class="fas fa-chart-line"></i></span>
+                        <div>
+                            <h3 class="font-extrabold text-slate-900">Desempenho de vendas</h3>
+                            <p class="text-xs text-slate-500">Faturamento mensal</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chartMensal"></canvas>
+                    </div>
+                </article>
+
+                <article class="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                    <div class="mb-5 flex items-center gap-3">
+                        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600"><i class="fas fa-users"></i></span>
+                        <div>
+                            <h3 class="font-extrabold text-slate-900">Principais clientes</h3>
+                            <p class="text-xs text-slate-500">Ranking por valor de compras</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chartCliente"></canvas>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <footer class="mt-8 border-t border-slate-200 py-5 text-center text-xs text-slate-400">
+            AWT Sales Manager · Painel de indicadores comerciais
+        </footer>
+    </main>
+<script>
+        // ConfiguraÃ§Ã£o do GrÃ¡fico Mensal (Linha Azul)
         new Chart(document.getElementById('chartMensal'), {
             type: 'line',
             data: {
@@ -130,7 +183,7 @@ if($clientes_rank){
             }
         });
 
-        // Configuração do Gráfico de Clientes (Rosca Colorida)
+        // ConfiguraÃ§Ã£o do GrÃ¡fico de Clientes (Rosca Colorida)
         new Chart(document.getElementById('chartCliente'), {
             type: 'doughnut',
             data: {

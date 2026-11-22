@@ -1,30 +1,97 @@
 <?php
-include 'config.php';
 
-// Verifica se os parâmetros necessários existem
-if (isset($_GET['id']) && isset($_GET['acao'])) {
-    $id = intval($_GET['id']);
-    $acao = $_GET['acao'];
+require_once 'auth.php';
+require_once 'config.php';
 
-    // Define se soma 1 ou subtrai 1
-    if ($acao == 'add') {
-        $sql = "UPDATE produtos SET estoque = estoque + 1 WHERE idProduto = $id";
-    } elseif ($acao == 'sub') {
-        // Garante que o estoque não fique negativo (opcional, mas recomendado)
-        $sql = "UPDATE produtos SET estoque = GREATEST(0, estoque - 1) WHERE idProduto = $id";
-    }
-
-    // Executa a atualização
-    if ($conn->query($sql)) {
-        // Sucesso: Volta para a página de estoque
-        header("Location: estoque.php?sucesso=1");
-        exit();
-    } else {
-        echo "Erro ao atualizar estoque: " . $conn->error;
-    }
-} else {
-    // Se alguém acessar o arquivo direto sem passar ID, volta para o estoque
-    header("Location: estoque.php");
+function voltarEstoque(string $resultado): void
+{
+    header('Location: estoque.php?resultado=' . urlencode($resultado));
     exit();
 }
-?>
+
+// Aceita somente POST.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    voltarEstoque('solicitacao_invalida');
+}
+
+// Validação CSRF.
+$token = $_POST['csrf_token'] ?? '';
+
+if (
+    !is_string($token) ||
+    empty($_SESSION['csrf_estoque']) ||
+    !hash_equals($_SESSION['csrf_estoque'], $token)
+) {
+    voltarEstoque('csrf');
+}
+
+// Validação do produto.
+$id = filter_var(
+    $_POST['id'] ?? null,
+    FILTER_VALIDATE_INT,
+    ['options' => ['min_range' => 1]]
+);
+
+$acao = $_POST['acao'] ?? '';
+
+if (!$id || !in_array($acao, ['add', 'sub'], true)) {
+    voltarEstoque('dados_invalidos');
+}
+
+try {
+
+    if ($acao === 'add') {
+
+        $stmt = $conn->prepare(
+            "UPDATE produtos
+             SET estoque = COALESCE(estoque, 0) + 1
+             WHERE idProduto = ?"
+        );
+
+    } else {
+
+        $stmt = $conn->prepare(
+            "UPDATE produtos
+             SET estoque = estoque - 1
+             WHERE idProduto = ?
+             AND estoque > 0"
+        );
+    }
+
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+
+    $alteracoes = $stmt->affected_rows;
+    $stmt->close();
+
+    if ($alteracoes === 1) {
+        voltarEstoque('estoque_atualizado');
+    }
+
+    // Diferencia produto inexistente de estoque zerado.
+    $stmt = $conn->prepare(
+        "SELECT idProduto
+         FROM produtos
+         WHERE idProduto = ?
+         LIMIT 1"
+    );
+
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+
+    $produtoExiste = $stmt->get_result()->fetch_assoc();
+
+    $stmt->close();
+
+    if (!$produtoExiste) {
+        voltarEstoque('produto_nao_encontrado');
+    }
+
+    voltarEstoque('estoque_zerado');
+
+} catch (Throwable $e) {
+
+    error_log('Erro no ajuste de estoque: ' . $e->getMessage());
+
+    voltarEstoque('erro_estoque');
+}

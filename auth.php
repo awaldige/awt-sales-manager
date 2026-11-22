@@ -1,21 +1,30 @@
 <?php
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 1. Corrigido para 'usuario_idUsuario' (mesmo nome que está no seu login.php)
-if (!isset($_SESSION['usuario_idUsuario'])) {
+// Verifica se existe uma sessão autenticada.
+if (empty($_SESSION['usuario_idUsuario'])) {
     header("Location: login.php");
     exit();
 }
 
-// 2. Função auxiliar para restringir páginas apenas para Admin
-// Adicionado o '??' para evitar erro caso o nível não esteja definido
-function restringirAdmin() {
-    $nivel = $_SESSION['usuario_nivel'] ?? 'user';
-    if ($nivel !== 'admin') {
-        echo "<script>alert('Acesso negado: Área exclusiva para Administradores.'); window.location.href='index.php';</script>";
+// Aceita somente os níveis existentes no banco.
+$nivel = $_SESSION['usuario_nivel'] ?? '';
+
+if (!in_array($nivel, ['admin', 'colaborador'], true)) {
+    http_response_code(403);
+    exit('Acesso negado. Nivel de usuario invalido.');
+}
+
+// Restringe páginas e operações aos administradores.
+function restringirAdmin(): void
+{
+    if (($_SESSION['usuario_nivel'] ?? '') !== 'admin') {
+        header("Location: index.php?erro=acesso_negado");
         exit();
     }
 }
+
 ?>

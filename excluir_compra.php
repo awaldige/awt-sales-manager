@@ -1,56 +1,126 @@
 <?php
-include 'auth.php'; 
+include 'auth.php';
 include 'config.php';
 
-if (isset($_GET['cod']) && !empty($_GET['cod'])) {
-    $cod = $_GET['cod'];
+// Exclusão de compras: somente administradores.
+restringirAdmin();
 
-    // 1. Verificar se é um código novo (COMPRA-...) ou um ID antigo (AVULSO-X)
-    // Se o código começar com 'AVULSO-', extraímos apenas o ID numérico
-    if (strpos($cod, 'AVULSO-') !== false) {
-        $idAntigo = str_replace('AVULSO-', '', $cod);
-        $sqlBusca = "SELECT idProduto, quantidade, StatusCompra FROM compra WHERE idCompra = ?";
-        $params = [$idAntigo, "i"];
-        $sqlDelete = "DELETE FROM compra WHERE idCompra = ?";
-    } else {
-        // É um lote novo agrupado pelo código
-        $sqlBusca = "SELECT idProduto, quantidade, StatusCompra FROM compra WHERE codigo_controle = ?";
-        $params = [$cod, "s"];
-        $sqlDelete = "DELETE FROM compra WHERE codigo_controle = ?";
-    }
-
-    $stmt = $conn->prepare($sqlBusca);
-    $stmt->bind_param($params[1], $params[0]);
-    $stmt->execute();
-    $resultado = $stmt->get_result();
-
-    if ($resultado->num_rows > 0) {
-        $conn->begin_transaction();
-        try {
-            while ($compra = $resultado->fetch_assoc()) {
-                // Estorno de estoque se já foi recebido
-                if ($compra['StatusCompra'] == 'Recebido') {
-                    $upd = $conn->prepare("UPDATE produtos SET estoque = estoque - ? WHERE idProduto = ?");
-                    $upd->bind_param("ii", $compra['quantidade'], $compra['idProduto']);
-                    $upd->execute();
-                }
-            }
-
-            // Deletar o registro ou o lote
-            $del = $conn->prepare($sqlDelete);
-            $del->bind_param($params[1], $params[0]);
-            $del->execute();
-
-            $conn->commit();
-            echo "<script>alert('Excluído com sucesso!'); window.location.href = 'compra.php';</script>";
-        } catch (Exception $e) {
-            $conn->rollback();
-            echo "Erro: " . $e->getMessage();
-        }
-    } else {
-        echo "<script>alert('Erro: Registro não localizado no banco (Cod: $cod)'); window.location.href='compra.php';</script>";
-    }
-} else {
-    header("Location: compra.php");
+// Bloqueia qualquer acesso que não seja POST.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: compra.php?erro=metodo');
+    exit;
 }
-exit;
+
+// Validação do token CSRF.
+$token = $_POST['csrf_token'] ?? '';
+$tokenSessao = $_SESSION['csrf_exclusao_compra'] ?? '';
+
+if (
+    !is_string($token) ||
+    !is_string($tokenSessao) ||
+    $token === '' ||
+    $tokenSessao === '' ||
+    !hash_equals($tokenSessao, $token)
+) {
+    header('Location: compra.php?erro=seguranca');
+    exit;
+}
+
+// Validação do código recebido.
+$cod = $_POST['cod'] ?? '';
+
+if (!is_string($cod) || $cod === '' || strlen($cod) > 60) {
+    header('Location: compra.php?erro=dados');
+    exit;
+}
+
+// Identifica compras antigas (AVULSO) ou lotes novos.
+if (preg_match('/^AVULSO-([1-9][0-9]*)$/D', $cod, $matches)) {
+    $idAntigo = filter_var(
+        $matches[1],
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1]]
+    );
+
+    if ($idAntigo === false) {
+        header('Location: compra.php?erro=dados');
+        exit;
+    }
+
+    $sqlBusca = "SELECT idCompra, StatusCompra
+                 FROM compra
+                 WHERE idCompra = ?
+                 FOR UPDATE";
+
+    $sqlDelete = "DELETE FROM compra WHERE idCompra = ?";
+    $tipoParametro = 'i';
+    $parametro = $idAntigo;
+} else {
+    if (!preg_match('/^[A-Za-z0-9_-]{1,50}$/D', $cod)) {
+        header('Location: compra.php?erro=dados');
+        exit;
+    }
+
+    $sqlBusca = "SELECT idCompra, StatusCompra
+                 FROM compra
+                 WHERE codigo_controle = ?
+                 FOR UPDATE";
+
+    $sqlDelete = "DELETE FROM compra WHERE codigo_controle = ?";
+    $tipoParametro = 's';
+    $parametro = $cod;
+}
+
+$transacaoIniciada = false;
+
+try {
+    $conn->begin_transaction();
+    $transacaoIniciada = true;
+
+    // Bloqueia os registros durante a validação.
+    $busca = $conn->prepare($sqlBusca);
+    $busca->bind_param($tipoParametro, $parametro);
+    $busca->execute();
+
+    $resultado = $busca->get_result();
+
+    if ($resultado->num_rows === 0) {
+        throw new RuntimeException('Compra não localizada.');
+    }
+
+    // Compras recebidas ou canceladas não podem ser excluídas.
+    while ($compra = $resultado->fetch_assoc()) {
+        if ($compra['StatusCompra'] !== 'Pendente') {
+            throw new RuntimeException('Compra não pode ser excluída.');
+        }
+    }
+
+    $busca->close();
+
+    // Exclui somente os registros pendentes.
+    $exclusao = $conn->prepare($sqlDelete);
+    $exclusao->bind_param($tipoParametro, $parametro);
+    $exclusao->execute();
+
+    if ($exclusao->affected_rows < 1) {
+        throw new RuntimeException('Nenhum registro foi excluído.');
+    }
+
+    $exclusao->close();
+
+    $conn->commit();
+    $transacaoIniciada = false;
+
+    header('Location: compra.php?exclusao=sucesso');
+    exit;
+
+} catch (Throwable $e) {
+    if ($transacaoIniciada) {
+        $conn->rollback();
+    }
+
+    error_log('Falha na exclusão de compra: ' . $e->getMessage());
+
+    header('Location: compra.php?erro=exclusao');
+    exit;
+}
