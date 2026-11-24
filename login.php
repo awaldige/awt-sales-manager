@@ -1,5 +1,3 @@
-
-$conteudo = @'
 <?php
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -101,21 +99,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 
-<body class="min-h-screen flex items-center justify-center p-4 sm:p-6">
+<body class="min-h-screen flex items-start justify-center p-3 sm:items-center sm:p-6">
 
     <main class="login-card w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-white">
 
-        <div class="grid min-h-[620px] md:grid-cols-2">
+        <div class="grid min-h-0 md:min-h-[620px] md:grid-cols-2">
 
             <!-- PAINEL INSTITUCIONAL -->
-            <section class="relative flex flex-col justify-between overflow-hidden bg-slate-950 p-8 text-white sm:p-12">
+            <section class="relative flex flex-col justify-between overflow-hidden bg-slate-950 p-5 text-white sm:p-12">
 
                 <div class="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-blue-600/20 blur-3xl"></div>
                 <div class="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-sky-500/10 blur-3xl"></div>
 
                 <div class="relative z-10">
 
-                    <div class="mb-14 flex items-center gap-3">
+                    <div class="mb-5 flex items-center gap-3 sm:mb-14">
                         <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-blue-400/30 bg-blue-500/10 text-xl font-black tracking-tighter">
                             <span class="text-white">A</span><span class="text-sky-400">W</span>
                         </div>
@@ -126,20 +124,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <p class="mb-4 text-xs font-bold uppercase tracking-[.25em] text-blue-400">
+                    <p class="mb-4 hidden text-xs font-bold uppercase tracking-[.25em] text-blue-400 sm:block">
                         Gestão inteligente
                     </p>
 
-                    <h1 class="max-w-md text-4xl font-black leading-tight sm:text-5xl">
+                    <h1 class="hidden max-w-md text-4xl font-black leading-tight sm:block sm:text-5xl">
                         Controle seu negócio com
                         <span class="text-blue-400">mais eficiência.</span>
                     </h1>
 
-                    <p class="mt-6 max-w-md text-sm leading-7 text-slate-400">
+                    <p class="mt-6 hidden max-w-md text-sm leading-7 text-slate-400 sm:block">
                         Uma plataforma para organizar vendas, compras, estoque e informações em um só lugar.
                     </p>
 
-                    <div class="mt-10 space-y-5">
+                    <div class="mt-5 hidden space-y-5 sm:mt-10 sm:block">
 
                         <div class="flex items-center gap-4">
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
@@ -180,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <div class="relative z-10 mt-12 border-t border-white/10 pt-6">
+                <div class="relative z-10 mt-5 border-t border-white/10 pt-4 sm:mt-12 sm:pt-6">
                     <p class="text-xs text-slate-500">
                         Projeto demonstrativo desenvolvido por
                         <span class="font-bold text-slate-300">AW TECHNOLOGY</span>
@@ -190,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </section>
 
             <!-- FORMULÁRIO DE ACESSO -->
-            <section class="flex items-center justify-center bg-white px-7 py-12 sm:px-12">
+            <section class="flex items-center justify-center bg-white px-5 py-7 sm:px-12 sm:py-12">
 
                 <div class="w-full max-w-sm">
 
@@ -287,6 +285,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </body>
 </html>
-'@
-
-Set-Content -Path .\login.php -Value $conteudo -Encoding UTF8
