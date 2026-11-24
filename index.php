@@ -45,6 +45,7 @@ $res_financeiro = $conn->query("
 <head>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | AWT Sales Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -327,3 +328,4 @@ $res_financeiro = $conn->query("
     </main>
 </body>
 </html>
+
